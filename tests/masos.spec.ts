@@ -1,8 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('masos test', async ({ page }) => {
-    await page.goto('/cart');
-
+    test.setTimeout(120_000)
     await page.goto('/');
     await expect(page).toHaveTitle("All Events | MasOS Staging");
 
@@ -64,7 +63,8 @@ test('masos test', async ({ page }) => {
 
     await expect(page.getByText('Initializing transaction...')).toBeVisible();
     await expect(page.getByText('Initializing transaction...')).toBeHidden();
-    await expect(page.getByTestId('payment-stripe')).toBeVisible();
+
+    await expect(page.getByTestId('payment-stripe')).not.toHaveClass(/hidden/, { timeout: 30_000 });
 
     //await expect(page.locator('[title="Secure payment input frame"]').contentFrame().getByText('Card number')).toBeVisible();
 
@@ -77,6 +77,19 @@ test('masos test', async ({ page }) => {
     await frame.locator('#payment-expiryInput').fill('1234');
     await frame.locator('#payment-cvcInput').fill('123');
     await expect(page.getByText('Pay Now')).toBeVisible();
+
+    await page.getByText('Pay Now').click();
+
+    await expect(page.getByTestId('payment-stripe')).toHaveClass(/hidden/, { timeout: 80_000 });
+    await expect(page.getByRole('heading', { level: 1, name: "Payment Successful" })).toBeVisible({ timeout: 80_000 });
+
+    await page.goto('/masquerader/orders');
+    await expect(page.getByRole('heading', { level: 1, name: "Orders" })).toBeVisible({ timeout: 30_000 });
+
+    await page.getByTestId('menu').first().click();
+    await page.getByText('View Receipt').click();
+
+    await expect(page.getByText('MasOS Staging')).toBeVisible();
 
     await page.screenshot({
         path: 'screenshots/page2.png',

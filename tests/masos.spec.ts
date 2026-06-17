@@ -4,12 +4,25 @@ test('masos test', async ({ page }) => {
   test.setTimeout(120_000);
   await page.goto('/');
   await expect(page).toHaveTitle('All Events | MasOS Staging');
+  await page.screenshot({
+    path: 'screenshots/main-page.png',
+    fullPage: true,
+  });
 
   await page.locator('[data-testid=event-card-0]').click();
   await expect(page.locator('[data-testid=product-card-5]').first()).toBeVisible();
+
+  await page.screenshot({
+    path: 'screenshots/event.png',
+    fullPage: true,
+  });
   await page.locator('[data-testid=product-card-5]').first().click();
 
   await expect(page.getByRole('heading', { level: 1, name: 'Sign In' })).toBeVisible();
+  await page.screenshot({
+    path: 'screenshots/sign-in.png',
+    fullPage: true,
+  });
 
   await page.locator('[inputmode=email]').fill(process.env.EMAIL!);
   await page.locator('[type=password]').fill(process.env.PASSWORD!);
@@ -18,13 +31,12 @@ test('masos test', async ({ page }) => {
 
   await expect(page).not.toHaveURL(/sign-in/);
   await expect(page.getByRole('heading', { level: 1, name: 'Package Options' })).toBeVisible();
-  await expect(page.getByText('No').first()).toBeVisible();
-  await page.getByText('No').first().click();
-
   await page.screenshot({
-    path: 'screenshots/page.png',
+    path: 'screenshots/options.png',
     fullPage: true,
   });
+  await expect(page.getByText('No').first()).toBeVisible();
+  await page.getByText('No').first().click();
 
   await expect(page.locator('[type=file]').first()).toBeVisible();
   await page.locator('[type=file]').first().setInputFiles('public/carnival.png');
@@ -39,10 +51,13 @@ test('masos test', async ({ page }) => {
 
   await page.waitForLoadState('load');
   await expect(page).toHaveURL(/cart/);
-
+  await page.screenshot({
+    path: 'screenshots/cart.png',
+    fullPage: true,
+  });
   await expect(page.getByTestId('go-to-checkout')).toBeVisible();
   await page.screenshot({
-    path: 'screenshots/page3.png',
+    path: 'screenshots/checkout.png',
     fullPage: true,
   });
   await page.getByTestId('go-to-checkout').click();
@@ -57,7 +72,10 @@ test('masos test', async ({ page }) => {
   await expect(page.getByTestId('payment-method-select-4')).toBeVisible();
   await page.getByTestId('payment-method-select-4').click();
   await expect(page.getByTestId('payment-method-select-4')).toBeChecked();
-
+  await page.screenshot({
+    path: 'screenshots/payment.png',
+    fullPage: true,
+  });
   await expect(page.getByText('Initializing transaction...')).toBeVisible();
   await expect(page.getByText('Initializing transaction...')).toBeHidden();
 
@@ -84,6 +102,10 @@ test('masos test', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: 'Orders' })).toBeVisible({
     timeout: 30_000,
   });
+  await page.screenshot({
+    path: 'screenshots/orders.png',
+    fullPage: true,
+  });
 
   await page.getByTestId('menu').first().click();
   await page.getByText('View Receipt').click();
@@ -91,7 +113,7 @@ test('masos test', async ({ page }) => {
   await expect(page.getByText('MasOS Staging')).toBeVisible();
 
   await page.screenshot({
-    path: 'screenshots/page2.png',
+    path: 'screenshots/receipt.png',
     fullPage: true,
   });
 });

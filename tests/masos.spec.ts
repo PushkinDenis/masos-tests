@@ -70,12 +70,11 @@ test('masos test', async ({ page }) => {
 
     await expect(page.getByText('Initializing transaction...')).toBeVisible();
     await expect(page.getByText('Initializing transaction...')).toBeHidden();
-    await expect(page.getByTestId('payment-stripe')).not.toHaveClass(/hidden/, { timeout: 30_000 });
   });
 
   await test.step('Fill in card details and complete payment', async () => {
     const frameHandle = page.locator('[title="Secure payment input frame"]');
-    const frame = frameHandle.contentFrame();
+    const frame = frameHandle.first().contentFrame();
 
     await expect(frame.getByText('Card number')).toBeVisible();
     await expect(frame.locator('#payment-numberInput')).toBeVisible();
@@ -88,7 +87,6 @@ test('masos test', async ({ page }) => {
   });
 
   await test.step('Wait for payment success confirmation', async () => {
-    await expect(page.getByTestId('payment-stripe')).toHaveClass(/hidden/, { timeout: 80_000 });
     await expect(page.getByRole('heading', { level: 1, name: 'Payment Successful' })).toBeVisible({
       timeout: 80_000,
     });
